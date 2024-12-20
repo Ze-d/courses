@@ -41,18 +41,8 @@ def PRGA(S):
 
 
 def encrypt_logic(key, text):
-    ''' :key -> encryption key used for encrypting, as hex string
-        :text -> array of unicode values/ byte string to encrpyt/decrypt
-    '''
-    # For plaintext key, use this
-    key = [ord(c) for c in key]
-    # If key is in hex:
-    # key = codecs.decode(key, 'hex_codec')
-    # key = [c for c in key]
     keystream = PRGA(KSA(key))
     # logger.debug(type(keystream))
-    
-
     res = []
     for c in text:
         val = ("%02X" % (c ^ next(keystream)))  # XOR and taking hex
@@ -61,17 +51,13 @@ def encrypt_logic(key, text):
 
 
 def encrypt(key, plaintext):
-    ''' :key -> encryption key used for encrypting, as hex string
-        :plaintext -> plaintext string to encrpyt
-    '''
     plaintext = [ord(c) for c in plaintext]
+    key = [ord(c) for c in key]
     return encrypt_logic(key, plaintext)
 
 
 def decrypt(key, ciphertext):
-    ''' :key -> encryption key used for encrypting, as hex string
-        :ciphertext -> hex encoded ciphered text using RC4
-    '''
+    key = [ord(c) for c in key]
     ciphertext = codecs.decode(ciphertext, 'hex_codec')
     res = encrypt_logic(key, ciphertext)
     return codecs.decode(res, 'hex_codec').decode('utf-8')
@@ -104,7 +90,6 @@ def main():
 def test():
     # Test case 1
     # key = '4B6579' # 'Key' in hex
-    # key = 'Key'
     # plaintext = 'Plaintext'
     # ciphertext = 'BBF316E8D940AF0AD3'
     assert(encrypt('Key', 'Plaintext')) == 'BBF316E8D940AF0AD3'
